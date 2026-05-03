@@ -17,6 +17,7 @@ pinecone_api_key = PINECONE_API_KEY
 extracted_data = load_pdf_files(data="./data")
 minimal_docs = filter_minimal_doc(extracted_data)
 text_chunks = text_split(minimal_docs)
+
 embeddings = download_embeddings()
 pc = Pinecone(api_key=pinecone_api_key)
 
