@@ -14,8 +14,7 @@ import requests
 import os
 
 
-API_URL = "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2"
-
+API_URL = "https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2"
 headers = {
     "Authorization": f"Bearer {os.getenv('HUGGINGFACE_API_KEY')}"
 }
@@ -70,7 +69,10 @@ class HFAPIEmbeddings(Embeddings):
         response = requests.post(
             API_URL,
             headers=headers,
-            json={"inputs": text}
+            json={
+                "inputs": text,
+                "options": {"wait_for_model": True}
+            }
         )
 
         response.raise_for_status()
