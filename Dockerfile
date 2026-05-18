@@ -38,6 +38,9 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=bind,source=requirements.txt,target=requirements.txt \
     python -m pip install -r requirements.txt
 
+ENV TOKENIZERS_PARALLELISM=false
+
+
 RUN mkdir -p /tmp/huggingface && chmod 777 /tmp/huggingface
 
 ENV TRANSFORMERS_CACHE=/tmp/huggingface
@@ -53,4 +56,4 @@ COPY . .
 EXPOSE 8080
 
 # Run the application.
-CMD ["python", "app.py"]
+CMD gunicorn --workers 1 --threads 2 --bind 0.0.0.0:$PORT app:app

@@ -16,6 +16,8 @@ faiss-cpu==1.8.0
 transformers==4.41.2
 
 
+gunicorn==22.0.0
+
 #from langchain.vectorstores import FAISS
 #from transformers import pipeline
 #llm = pipeline("text-generation", model="gpt2")
