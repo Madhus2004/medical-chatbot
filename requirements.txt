@@ -17,7 +17,7 @@ transformers==4.41.2
 
 
 gunicorn==22.0.0
-
+requests==2.32.3
 #from langchain.vectorstores import FAISS
 #from transformers import pipeline
 #llm = pipeline("text-generation", model="gpt2")
