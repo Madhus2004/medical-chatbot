@@ -56,4 +56,4 @@ COPY . .
 EXPOSE 8080
 
 # Run the application.
-CMD gunicorn --workers 1 --threads 2 --bind 0.0.0.0:$PORT app:app
+CMD gunicorn --workers 1 --threads 2 --bind 0.0.0.0:${PORT:-8080} app:app

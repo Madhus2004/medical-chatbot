@@ -19,10 +19,8 @@ PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 pinecone_api_key = PINECONE_API_KEY
-
 embeddings = download_embeddings()
 index_name = "medical-chatbot"
-
 docsearch = PineconeVectorStore.from_existing_index(
     index_name = index_name,
     embedding = embeddings
@@ -37,6 +35,7 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
+
 llm = ChatGroq(
     groq_api_key=GROQ_API_KEY,
     model_name="llama-3.1-8b-instant"
@@ -45,6 +44,7 @@ llm = ChatGroq(
 document_chain = create_stuff_documents_chain(llm, prompt)
 
 retrieval_chain = create_retrieval_chain(retriever, document_chain)
+print("✅ Retrieval chain ready")
 
 
 @app.route("/")
