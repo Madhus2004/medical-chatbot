@@ -6,7 +6,7 @@ from langchain_core.embeddings import Embeddings
 import requests
 import os
 
-HF_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
+HF_API_KEY = os.getenv("HF_API_KEY")
 HF_URL = "https://router.huggingface.co/hf-inference/models/sentence-transformers/all-MiniLM-L6-v2/pipeline/feature-extraction"
 HF_HEADERS = {
     "Authorization": f"Bearer {HF_API_KEY}",
