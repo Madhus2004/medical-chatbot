@@ -1,14 +1,14 @@
 from flask import Flask, render_template, request
 from src.helper import download_embeddings
 from langchain_pinecone import PineconeVectorStore
-from groq import Groq
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
 import os
 from dotenv import load_dotenv
 from src.prompt import system_prompt
-from langchain.schema.runnable import RunnableLambda
+from langchain_core.messages import AIMessage
+from langchain_groq import ChatGroq
 
 load_dotenv()
 
@@ -17,9 +17,6 @@ app = Flask(__name__)
 
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-
-os.environ['PINECONE_API_KEY']=PINECONE_API_KEY
-os.environ['GROQ_API_KEY']=GROQ_API_KEY
 
 pinecone_api_key = PINECONE_API_KEY
 
@@ -40,20 +37,10 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-client = Groq(api_key=GROQ_API_KEY)
-
-def generate_answer(input):
-    prompt_text = str(input)
-    response = client.chat.completions.create(
-        model="openai/gpt-oss-20b",
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": prompt_text }
-        ]
-    )
-    return response.choices[0].message.content
-
-llm = RunnableLambda(generate_answer)
+llm = ChatGroq(
+    groq_api_key=GROQ_API_KEY,
+    model_name="llama-3.1-8b-instant"
+)
 
 document_chain = create_stuff_documents_chain(llm, prompt)
 
@@ -66,12 +53,36 @@ def index():
 
 @app.route("/get", methods=["GET","POST"])
 def chat():
-    msg = request.form["msg"]
-    input = msg
-    print(input)
-    response = retrieval_chain.invoke({"input": msg})
-    print("Response:", response["answer"])
-    return str(response["answer"])
+    try:
+        msg = request.form["msg"]
+
+        msg_lower = msg.lower().strip()
+
+        greetings = ["hi", "hello", "hey", "hii"]
+
+        if msg_lower in greetings:
+            return "Hi! How can I help you?"
+
+
+        print("USER:", msg)
+
+        print("STEP 1")
+
+        response = retrieval_chain.invoke({"input": msg})
+
+        print("STEP 2")
+
+        print(response)
+
+        return str(response["answer"])
+
+    except Exception as e:
+        print("ERROR:")
+        print(e)
+        return str(e)
+    
+
+port = int(os.environ.get("PORT",8080))
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port = 8080, debug = True)
+    app.run(host="0.0.0.0", port = port, debug = False)
